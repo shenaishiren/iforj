@@ -5,6 +5,7 @@ import hashlib
 
 # Create your models here.
 
+
 class User(models.Model):
     """用户表"""
     name = models.CharField(max_length=80, unique=True)  # 名字
@@ -22,14 +23,10 @@ class User(models.Model):
     agree_num = models.IntegerField(default=0)  # 赞同数(当问答问题的时候被赞+1)
     viewed = models.PositiveIntegerField(default=0)   # 被浏览次数
 
-
-
     def save(self, *args, **kwargs):
         self.psd = hashlib.sha1(self.psd).hexdigest()
         self.vericode = hashlib.sha1(self.email+'4646868').hexdigest()
         super(User,self).save(*args,**kwargs)
-
-
 
     def __unicode__(self):
         return self.name
@@ -60,21 +57,20 @@ class Question(models.Model):
         return self.title
 
 
-
 class Answer(models.Model):
     """答案表"""
     question = models.ForeignKey(Question)
     user = models.ForeignKey(User)  # 回答者
     text = models.TextField()   # 答案
     agree_user = models.ManyToManyField(User, related_name='answer_user') # 赞同的人
-    agree_num = models.SmallIntegerField(default=0) # 赞同人的数量
-    a_time = models.DateTimeField(auto_now_add=True)    #创建时间
+    agree_num = models.SmallIntegerField(default=0)  # 赞同人的数量
+    a_time = models.DateTimeField(auto_now_add=True)    # 创建时间
     weight = models.PositiveSmallIntegerField(null=True)    # 权重.
     waring = models.PositiveSmallIntegerField(null=True)    # 有人举报+1
 
-
     def __unicode__(self):
         return "%s"%self.text
+
 
 class Comment(models.Model):
     """评论"""
