@@ -42,7 +42,6 @@
 
 {% block content %}
 
-
     <div class="col-md-6 col-md-offset-3 questions" id="{{ questions.id }}">
 
         <div class="panel panel-default qpanel">
@@ -56,7 +55,15 @@
             <div class="panel-footer">
                 {#            <img src="{{ questions.user.image }}"#}
                 {#               class="img-circle" style="height: 30px;">#}
-                <a href="{% url 'programmer' questions.user_id %}">{{ questions.user }}</a>
+                <a href="{% url 'programmer' questions.user_id %}" data-trigger="manual" data-html="true"
+                   title="<div style='height:60px;'><img alt='{{ questions.user }}' src='{{ questions.user.image }}'
+                    style='width:50px;height:50px;float:left;' />&nbsp;&nbsp;&nbsp;<span style='float:left;margin-left:9px;'><a href='{% url 'programmer' questions.user_id %}'
+                            style='text-decoration: none;font-size:15px;'>{{ questions.user }}</a><br><br><p>{{ questions.user.introduction }}</p></span></div>"
+                        data-container="body" data-toggle="popover"
+                        data-content="<div style='height:35px;width:310px;'><strong>{{ questions.user.question_set.count }}</strong>&nbsp;<a href='#' class='col'>问题</a>&nbsp;&nbsp;
+                                <strong>{{ questions.user.answer_set.count }}</strong>&nbsp;<a href='' class=col'>回答</a>&nbsp;&nbsp;
+                                <strong>0</strong>&nbsp;<a href='' class='col'>关注者</a></div><button class='btn btn-primary'>关注</button>"
+                        >{{ questions.user }}</a>
                 共{{ questions.q_times }}个回答
                 <div class="pull-right">{{ questions.q_datetime|date:"Y-m-d H:i:s"}}</div>
             </div>
@@ -112,7 +119,15 @@
         {#        <br/>#}
 
         <div class="afooter">
-            <a href="{% url 'programmer' answer.user_id %}">{{ answer.user }}</a>
+            <a href="{% url 'programmer' answer.user_id %}" data-trigger="manual" data-html="true"
+                   title="<div style='height:60px;'><img alt='{{ answer.user }}' src='{{ answer.user.image }}'
+                    style='width:50px;height:50px;float:left;' />&nbsp;&nbsp;&nbsp;<span style='float:left;margin-left:9px;'><a href='{% url 'programmer' answer.user_id %}'
+                            style='text-decoration: none;font-size:15px;'>{{ answer.user }}</a><br><br><p>{{ answer.user.introduction }}</p></span></div>"
+                        data-container="body" data-toggle="popover"
+                        data-content="<div style='height:35px;width:310px;'><strong>{{ answer.user.question_set.count }}</strong>&nbsp;<a href='#' class='col'>问题</a>&nbsp;&nbsp;
+                                <strong>{{ answer.user.answer_set.count }}</strong>&nbsp;<a href='' class=col'>回答</a>&nbsp;&nbsp;
+                                <strong>0</strong>&nbsp;<a href='' class='col'>关注者</a></div><button class='btn btn-primary'>关注</button>"
+                        >{{ answer.user }}</a>
             <span class="invisible">
                 {{ answer.a_time|date:"Y-m-d H:i:s" }}
                 {#回答过显示编辑+评论#}
@@ -136,16 +151,18 @@
         <div class="panel panel-default cpanel" style="display: none" id="cp{{ answer.id }}">
             {% for comment in answer.comment_set.all %}
                 <div class="panel-body">
-                    <a href="/programmer/{{ comment.user.id }}">{{ comment.user}}</a>:
+                    <a href="/programmer/{{ comment.user.id }}" class="user">{{ comment.user }}</a>:
                     {{ comment.text }}
                 </div>
 
                 <hr/>
 
             {% endfor %}
+
             <div style="padding: 1em">
                 <input type="text" class="form-control addcomment" id="c{{ answer.id }}"
                        placeholder="">
+
                 <button type="button" style="display: none;padding: 0.5em 1em;" class="btn cbutton" id="cb{{ answer.id }}" >评论</button>
             </div>
         </div>
@@ -195,6 +212,8 @@
 
     {% endif %}
     </div>
+
+        </div>
 {% endif %}
 
 
@@ -204,11 +223,19 @@
 {% block js %}
     <script>
         {#    评论支持#}
-
+        flag = 0;
         $(".opencomment").click(function () {
-            var id = $(this).attr('name');
-            $('#cp'+id).css('display','block');
-{#            $(this).parent('.afooter').css('display','block');#}
+            if (flag == 0) {
+                flag = 1;
+                var id = $(this).attr('name');
+                $('#cp'+id).css('display','block');
+            }
+            else if (flag == 1) {
+                flag = 0;
+                var id = $(this).attr('name');
+                $('#cp'+id).css('display','none');
+            }
+            else;
         });
         {#焦点#}
         $(".addcomment").focus(function(){
@@ -464,6 +491,24 @@
                     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
                 }
             }
+        });
+
+        //悬浮窗口
+        $(function () {
+            $("[data-toggle='popover']").popover().on("mouseenter", function () {
+                    var _this = this;
+                    $(this).popover("show");
+                    $(this).siblings(".popover").on("mouseleave", function () {
+                        $(_this).popover('hide');
+                    });
+                }).on("mouseleave", function () {
+                    var _this = this;
+                    setTimeout(function () {
+                        if (!$(".popover:hover").length) {
+                            $(_this).popover("hide")
+                        }
+                    }, 10);
+                });
         });
     </script>
 {% endblock %}
