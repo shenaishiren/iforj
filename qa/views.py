@@ -238,9 +238,24 @@ def askquestion(request):
 
 def programmer(request, n):
     # 个人主页
-    user = User.objects.filter(id=n)
+    user = User.objects.filter(id=n)            # 这个返回的是数组
+    answers = user[0].answer_set.all()          # 一定要加[0]编程一个对象
+    answers_count = len(answers)
+    questions = user[0].question_set.all()
+    questions_count = len(questions)
+    q = request.GET.get('q')
     if user:
-        return render(request, 'programmer.html', {'user': user[0]})
+        if not q or q == 'answers':
+            return render(request, 'programmer.html', {'user': user[0], 'answers': answers,
+                                                       "answers_count": answers_count,
+                                                       "questions_count": questions_count})
+        elif q == 'questions':
+            return render(request, 'programmer_questions.html', {'user': user[0],
+                                                                 'questions': questions,
+                                                                 "questions_count": questions_count,
+                                                                 "answers_count": answers_count})
+        else:
+            pass  # 还要添加一些东西
     else:
         return HttpResponseRedirect("/")
 
@@ -302,3 +317,5 @@ def about_us(request):
 
 def test(request):
     return render(request, 'test.html')
+
+
