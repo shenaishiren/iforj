@@ -22,21 +22,20 @@ class User(models.Model):
     login_error = models.PositiveSmallIntegerField(default=0)   # 当错误登陆+1
     agree_num = models.IntegerField(default=0)  # 赞同数(当问答问题的时候被赞+1)
     viewed = models.PositiveIntegerField(default=0)   # 被浏览次数
-<<<<<<< HEAD
+
 #    def save(self, *args, **kwargs):
 #        self.psd = hashlib.sha1(self.psd).hexdigest()
 #        self.vericode = hashlib.sha1(self.email+'4646868').hexdigest()
 #        super(User,self).save(*args,**kwargs)
-=======
 
     def save(self, *args, **kwargs):
         self.psd = hashlib.sha1(self.psd).hexdigest()
         self.vericode = hashlib.sha1(self.email+'4646868').hexdigest()
         super(User,self).save(*args,**kwargs)
 
->>>>>>> 0876c71da7741f2d9aad132db3ae9e3d1f1b0701
     def __unicode__(self):
         return self.name
+
 
 class QuestionType(models.Model):
     """问题类型 比如 django/爬虫"""
