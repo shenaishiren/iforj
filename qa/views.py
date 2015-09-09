@@ -15,10 +15,14 @@ from send_email import sendMail
 def index(request):
     """Q&A首页"""
     name =request.session.get('name')
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0876c71da7741f2d9aad132db3ae9e3d1f1b0701
     # 显示最新
     questions = Question.objects.all()
     # 分页
-    paginator  = MyPaginator(questions, 10)
+    paginator = MyPaginator(questions, 10)
     page = request.GET.get('page')
     try:
         paginator.page(page)
@@ -30,19 +34,19 @@ def index(request):
     gol_error = request.GET.get('error') # 全局变量
     if name:
         # 当登陆时传递名字
-        return render(request,'index.html',{'questions': paginator, 'name': name.split()})
+        return render(request, 'index.html', {'questions': paginator, 'name': name.split()})
 
-    return render(request,'index.html',{'questions': paginator, 'error':gol_error})
+    return render(request, 'index.html', {'questions': paginator, 'error': gol_error})
 
 
 def top(request):
     """TOP"""
-    name =request.session.get('name')
+    name = request.session.get('name')
     qtype = request.GET.get('type')
  
     questions = Question.objects.all().order_by('-q_times')
     # 分页
-    paginator  = MyPaginator(questions, 10)
+    paginator = MyPaginator(questions, 10)
     page = request.GET.get('page')
     try:
         paginator.page(page)
@@ -54,15 +58,29 @@ def top(request):
     gol_error = request.GET.get('error')
     if name:
         # 当登陆时传递名字
-        return render(request,'index.html',{'questions': paginator, 'name': name.split()})
+        return render(request, 'index.html', {'questions': paginator, 'name': name.split()})
 
-    return render(request,'index.html',{'questions': paginator, 'error':gol_error})
+    return render(request, 'index.html', {'questions': paginator, 'error': gol_error})
 
+<<<<<<< HEAD
+=======
+
+# 后期再改
+def testtwo():
+    access_key = "wmN715-Lo5SC1jYIkuqObCLl1bhZoURTxewUGyq2"
+    secret_key = "IXXeA4-Rzu9RB6nkf687UjQt9YCOp1JpWptm0C0y"
+    bucket_name = "iforj"
+    q = qiniu.Auth(access_key, secret_key)
+    token = q.upload_token(bucket_name)
+    return token
+
+
+>>>>>>> 0876c71da7741f2d9aad132db3ae9e3d1f1b0701
 def getquestion(request, n):
     """问题页面"""
     questions = Question.objects.get(id=n)
     answers = questions.answer_set.all()
-    name =request.session.get('name')
+    name = request.session.get('name')
     if name:
         # 当登陆时传递名字
         user = User.objects.get(name=name.split()[0])
@@ -84,6 +102,7 @@ def getquestion(request, n):
         # 没登陆
         return render(request,'question.html', {'questions': questions,
                                                 'answers': answers})
+
 
 def commit_post_add(request):
     """ajax提交答案"""
@@ -107,6 +126,7 @@ def commit_post_add(request):
     else:
         return HttpResponse('error')
 
+
 def commit_post_update(request):
     """ajax更新答案"""
     name = request.session.get('name').split()
@@ -120,11 +140,9 @@ def commit_post_update(request):
         if answer:
             answer.text = text
             answer.save()
-            return JsonResponse({'status':'ok'})
+            return JsonResponse({'status': 'ok'})
     else:
         return HttpResponse('ERROR')
-
-
 
 
 def login(request):
@@ -140,13 +158,14 @@ def login(request):
             user = User.objects.filter(email=u_email, psd=hashlib.sha1(u_psd).hexdigest())
             if user:
                 # response = HttpResponseRedirect('/')
-                response =HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+                response = HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
                 name = user[0].name
                 request.session['name'] = name+" "+str(user[0].id)
                 return response
             else:
                 # return HttpResponseRedirect("/"+"?error=loginerror&a=%s"%hashlib.sha1(u_psd).hexdigest())
                 return HttpResponseRedirect("/"+"?error=loginerror")
+
 
 def register(request):
     """注册用户"""
@@ -166,8 +185,9 @@ def register(request):
                 pass# 邮件发送失败
             return HttpResponseRedirect("/")
         else:
-            return render(request,"register.html",{'errors': f.errors})
-    return render(request,"register.html")
+            return render(request, "register.html", {'errors': f.errors})
+    return render(request, "register.html")
+
 
 def mypaginator(request, questions, n):
     paginator  = MyPaginator(questions, n)
@@ -195,13 +215,23 @@ def search(request):
 
     if search_type == "question":
         questions = Question.objects.filter(title__icontains=q)
+<<<<<<< HEAD
         paginator = mypaginator(request, questions, 10)
         return render(request,'search.html',{'questions': paginator,'q':q,'flag':'question',"name":name})
 
+=======
+        return render(request, 'search.html', {'questions': questions, 'q': q, 'flag': 'question', "name": name})
+>>>>>>> 0876c71da7741f2d9aad132db3ae9e3d1f1b0701
     elif search_type == "people":
         users = User.objects.filter(name__contains=q)
-        return render(request,"search.html",{'users': users,'q': q,'flag':'people',"name":name})
+        return render(request, "search.html", {'users': users, 'q': q, 'flag': 'people', "name": name})
     else:
+<<<<<<< HEAD
+=======
+        topics = QuestionType.objects.filter(name__icontains=q)
+        return render(request, "search.html", {'topics': topics, "q": q, 'flag': 'topic', "name": name})
+
+>>>>>>> 0876c71da7741f2d9aad132db3ae9e3d1f1b0701
 
         topics = QuestionType.objects.filter(name__icontains=q)
         questiontype = QuestionType.objects.get(name = q)
@@ -222,13 +252,17 @@ def search(request):
 def logout(request):
     """登出"""
     del request.session['name']
+<<<<<<< HEAD
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))   # 改成 js
 
+=======
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))   # 改成刷新 或者 js
+>>>>>>> 0876c71da7741f2d9aad132db3ae9e3d1f1b0701
 
 
 def askquestion(request):
     """提问模板"""
-    name =request.session.get('name')
+    name = request.session.get('name')
     if request.method == "POST":
         form = QuestionForm(request.POST)
         if form.is_valid():
@@ -247,15 +281,40 @@ def askquestion(request):
             # return HttpResponse(request.POST.get('title'))
             return render(request, 'askquestion.html')
     if name:
+<<<<<<< HEAD
         return render(request,'askquestion.html',{'QuestionForm':QuestionForm, 'name':name.split()})
+=======
+        access_key = "wmN715-Lo5SC1jYIkuqObCLl1bhZoURTxewUGyq2"
+        secret_key = "IXXeA4-Rzu9RB6nkf687UjQt9YCOp1JpWptm0C0y"
+        bucket_name = "iforj"
+        q = qiniu.Auth(access_key, secret_key)
+        token = q.upload_token(bucket_name)
+        return render(request, 'askquestion.html', {'QuestionForm': QuestionForm, 'uptoken': token, 'name':name.split()})
+>>>>>>> 0876c71da7741f2d9aad132db3ae9e3d1f1b0701
     else:
         return HttpResponseRedirect("/")
 
+
 def programmer(request, n):
     # 个人主页
-    user = User.objects.filter(id=n)
+    user = User.objects.filter(id=n)            # 这个返回的是数组
+    answers = user[0].answer_set.all()          # 一定要加[0]编程一个对象
+    answers_count = len(answers)
+    questions = user[0].question_set.all()
+    questions_count = len(questions)
+    q = request.GET.get('q')
     if user:
-        return render(request, 'programmer.html', {'user':user[0]})
+        if not q or q == 'answers':
+            return render(request, 'programmer.html', {'user': user[0], 'answers': answers,
+                                                       "answers_count": answers_count,
+                                                       "questions_count": questions_count})
+        elif q == 'questions':
+            return render(request, 'programmer_questions.html', {'user': user[0],
+                                                                 'questions': questions,
+                                                                 "questions_count": questions_count,
+                                                                 "answers_count": answers_count})
+        else:
+            pass  # 还要添加一些东西
     else:
         return HttpResponseRedirect("/")
 
@@ -275,7 +334,7 @@ def agree_answer(request):
                 answer.agree_num += 1
                 answer.agree_user.add(user)
                 answer.save()
-                jsonData = {'status':'ok'}
+                jsonData = {'status': 'ok'}
                 return JsonResponse(jsonData)
             else:
                 return HttpResponse("已经赞同过了↖(^ω^)↗")
@@ -284,16 +343,18 @@ def agree_answer(request):
                 answer.agree_num -= 1
                 answer.agree_user.remove(user)
                 answer.save()
-                jsonData = {'status':'ok'}
+                jsonData = {'status': 'ok'}
                 return JsonResponse(jsonData)
             else:
                 return HttpResponse("已经取消赞同啦")
     else:
         return HttpResponse("可以麻烦您登陆下么⊙︿⊙")
 
+
 def getcomment(request):
     # 得到评论
     return HttpResponse('ok')
+
 
 def addcomment(request):
     name = request.session.get('name')
@@ -304,12 +365,17 @@ def addcomment(request):
         answer = Answer.objects.get(id=aid)
         comment = Comment(user=user, text=text, answer=answer)
         comment.save()
-        return JsonResponse({'status':'ok'})
+        return JsonResponse({'status': 'ok'})
     else:
         return HttpResponse('not login')
 
 
+def about_us(request):
+    return render(request, 'about_me.html')
+
+
 def test(request):
+<<<<<<< HEAD
     return render(request,'test.html')
 
 def qntoken(request):
@@ -325,4 +391,8 @@ def validate(request, code):
         user[0].is_veri = True
         user[0].save()
     return HttpResponse(code)
+=======
+    return render(request, 'test.html')
+
+>>>>>>> 0876c71da7741f2d9aad132db3ae9e3d1f1b0701
 
